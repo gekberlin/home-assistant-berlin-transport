@@ -7,13 +7,15 @@ from .const import TRANSPORT_TYPE_VISUALS, DEFAULT_ICON
 @dataclass
 class Departure:
     """Departure dataclass to store data from API:
-    https://v6.vbb.transport.rest/api.html#get-stopsiddepartures"""
+    https://v6.bvg.transport.rest/api.html#get-stopsiddepartures"""
 
     trip_id: str
     line_name: str
     line_type: str
     timestamp: datetime
     time: datetime
+    prognosistype: str
+    occupancy: str
     direction: str | None = None
     icon: str | None = None
     bg_color: str | None = None
@@ -36,6 +38,7 @@ class Departure:
             timestamp=timestamp,
             time=timestamp.strftime("%H:%M"),
             direction=source.get("direction"),
+            occupancy=source.get("occupancy"),
             icon=line_visuals.get("icon") or DEFAULT_ICON,
             bg_color=source.get("line", {}).get("color", {}).get("bg"),
             fallback_color=line_visuals.get("color"),
@@ -44,6 +47,7 @@ class Departure:
                 source.get("currentTripPosition", {}).get("longitude") or 0.0,
             ],
             cancelled=source.get("cancelled", False),
+            prognosistype=source.get("prognosisType"),
             delay=source.get("delay", None),
         )
 
@@ -56,7 +60,9 @@ class Departure:
             "line_type": self.line_type,
             "time": self.time,
             "timestamp": self.timestamp,
+            "prognosisType": self.prognosistype,
             "direction": self.direction,
+            "occupancy": self.occupancy,
             "color": color,
             "cancelled": self.cancelled,
             "delay": self.delay,
